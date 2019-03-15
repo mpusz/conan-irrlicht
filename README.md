@@ -5,7 +5,7 @@
 
 # conan-irrlicht
 
-[conan-mpusz](https://bintray.com/mpusz/conan-mpusz) package for [Google Benchmark](https://github.com/google/benchmark) library.
+[conan-mpusz](https://bintray.com/mpusz/conan-mpusz) package for [Irrlicht](http://irrlicht.sourceforge.net/) library.
 
 The package generated with this **conanfile** can be found at [conan-mpusz](https://bintray.com/mpusz/conan-mpusz/irrlicht%3Ampusz).
 
