@@ -7,7 +7,7 @@ class IrrlichtConan(ConanFile):
     license = "http://irrlicht.sourceforge.net/?page_id=294"
     url = "https://github.com/mpusz/conan-irrlicht"
     description = "An open source high performance realtime 3D engine written in C++"
-    exports = ["LICENSE.md"]
+    exports = "LICENSE.md"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
@@ -73,7 +73,8 @@ class IrrlichtConan(ConanFile):
                 autotools.make(target=make_target)
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
+        self.copy(pattern="*license*", dst="licenses", ignore_case=True, keep_path=False)
+
         include_folder = os.path.join(self._source_subfolder, "include")
         self.copy(pattern="*", dst="include", src=include_folder)
 
