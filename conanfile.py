@@ -1,5 +1,6 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, MSBuild, tools
 import os
+import shutil
 
 class IrrlichtConan(ConanFile):
     name = "irrlicht"
@@ -13,7 +14,7 @@ class IrrlichtConan(ConanFile):
     default_options = {"shared": False, "fPIC": True}
 
     @property
-    def _source_subfolder(self):
+    def _subfolder(self):
         return "irrlicht-%s" % self.version
 
     def config_options(self):
@@ -23,9 +24,6 @@ class IrrlichtConan(ConanFile):
     def source(self):
         zip_name = "irrlicht-%s.zip" % self.version
         tools.get("http://downloads.sourceforge.net/irrlicht/%s" % zip_name, sha1="38bf0223fe868d243d6a39d0dc191c8df6e03b3b")
-
-        # patch library name
-        tools.replace_in_file(os.path.join(self._source_subfolder, "source", "Irrlicht", "Makefile"), "-ld3dx9d", "-ld3dx9")
 
     def system_requirements(self):
         if self.settings.os == "Macos":
@@ -52,20 +50,31 @@ class IrrlichtConan(ConanFile):
             for package in packages:
                 installer.install(package)
 
+    def _patch_windows(self):
+        # patch library name
+        tools.replace_in_file("Makefile", "-ld3dx9d", "-ld3dx9")
+
+    def _patch_macos(self):
+        # patch OSX build
+        shutil.move("Irrlicht.cpp", "Irrlicht.mm")
+        shutil.move("COpenGLDriver.cpp", "COpenGLDriver.mm")
+
     def build(self):
         if self.settings.compiler == "Visual Studio":
             msbuild = MSBuild(self)
-            msbuild.build("../source/%s/source/Irrlicht/Irrlicht11.0.sln" % self._source_subfolder)
+            msbuild.build("../source/%s/source/Irrlicht/Irrlicht11.0.sln" % self._subfolder)
             # TBD....
         else:
-            with tools.chdir(os.path.join(self._source_subfolder, "source", "Irrlicht")):
+            with tools.chdir(os.path.join(self._subfolder, "source", "Irrlicht")):
                 autotools = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
                 if self.settings.os != 'Windows':
                     autotools.fpic = self.options.fPIC
 
                 if tools.os_info.is_windows:
+                    self._patch_windows()
                     make_target = "sharedlib_win32" if self.options.shared else "staticlib_win32"
                 elif tools.os_info.is_macos:
+                    self._patch_macos()
                     make_target = "sharedlib_osx" if self.options.shared else "staticlib_osx"
                 else:
                     make_target = "sharedlib" if self.options.shared else "staticlib"
@@ -75,10 +84,10 @@ class IrrlichtConan(ConanFile):
     def package(self):
         self.copy(pattern="*license*", dst="licenses", ignore_case=True, keep_path=False)
 
-        include_folder = os.path.join(self._source_subfolder, "include")
+        include_folder = os.path.join(self._subfolder, "include")
         self.copy(pattern="*", dst="include", src=include_folder)
 
-        media_folder = os.path.join(self._source_subfolder, "media")
+        media_folder = os.path.join(self._subfolder, "media")
         self.copy(pattern="*", dst="media", src=media_folder)
 
         if tools.os_info.is_windows:
@@ -88,8 +97,8 @@ class IrrlichtConan(ConanFile):
         else:
             folder = "Linux"
 
-        lib_folder = os.path.join(self._source_subfolder, "lib", folder)
-        bin_folder = os.path.join(self._source_subfolder, "bin", folder)
+        lib_folder = os.path.join(self._subfolder, "lib", folder)
+        bin_folder = os.path.join(self._subfolder, "bin", folder)
 
         self.copy(pattern="*.dll", src=bin_folder, dst="bin", keep_path=False)
         self.copy(pattern="*.lib", src=lib_folder, dst="lib", keep_path=False)
