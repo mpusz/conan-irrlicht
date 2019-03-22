@@ -50,7 +50,7 @@ class IrrlichtConan(ConanFile):
             for package in packages:
                 installer.install(package)
 
-    def _patch_windows(self):
+    def _patch_mingw(self):
         # patch library name
         tools.replace_in_file("Makefile", "-ld3dx9d", "-ld3dx9")
 
@@ -71,7 +71,7 @@ class IrrlichtConan(ConanFile):
                     autotools.fpic = self.options.fPIC
 
                 if tools.os_info.is_windows:
-                    self._patch_windows()
+                    self._patch_mingw()
                     make_target = "sharedlib_win32" if self.options.shared else "staticlib_win32"
                 elif tools.os_info.is_macos:
                     self._patch_macos()
