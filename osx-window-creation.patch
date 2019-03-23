@@ -1,8 +1,8 @@
-Index: source/Irrlicht/CIrrDeviceOSX.mm
+Index: source/Irrlicht/MacOSX/CIrrDeviceOSX.mm
 ===================================================================
---- source/Irrlicht/CIrrDeviceOSX.mm	(revision 5652)
-+++ source/Irrlicht/CIrrDeviceOSX.mm	(working copy)
-@@ -577,8 +577,8 @@
+--- source/Irrlicht/MacOSX/CIrrDeviceOSX.mm	(revision 5652)
++++ source/Irrlicht/MacOSX/CIrrDeviceOSX.mm	(working copy)
+@@ -495,8 +495,8 @@
  		if (!CreationParams.WindowId)
  		{
  			[[NSAutoreleasePool alloc] init];
