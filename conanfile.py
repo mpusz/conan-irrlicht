@@ -26,8 +26,8 @@ class IrrlichtConan(ConanFile):
         tools.get("http://downloads.sourceforge.net/irrlicht/%s" % zip_name, sha1="38bf0223fe868d243d6a39d0dc191c8df6e03b3b")
 
     def system_requirements(self):
-        if self.settings.os == "Macos":
-            self.run("brew cask install xquartz")
+#        if self.settings.os == "Macos":
+#            self.run("brew cask install xquartz")
 
         if self.settings.os == "Linux" and tools.os_info.is_linux:
             installer = tools.SystemPackageTool()
@@ -58,6 +58,7 @@ class IrrlichtConan(ConanFile):
         # patch OSX build
         shutil.move("Irrlicht.cpp", "Irrlicht.mm")
         shutil.move("COpenGLDriver.cpp", "COpenGLDriver.mm")
+        tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")        
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
