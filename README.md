@@ -11,9 +11,9 @@ The package generated with this **conanfile** can be found at [conan-mpusz](http
 
 `conan` client can be downloaded from [Conan.io](https://conan.io).
 
-## Reuse the package
+## Use the package
 
-### Add conan-mpusz remote
+### Add the remote
 
 To add [conan-mpusz](https://bintray.com/mpusz/conan-mpusz) remote to your
 local `conan` instance run:
@@ -25,7 +25,7 @@ conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
 ### Basic setup
 
 ```
-$ conan install irrlicht/1.8.4@mpusz/stable --build=missing
+$ conan install irrlicht/1.8.4@mpusz/stable -pr <your_conan_profile> -b=outdated
 ```
 
 ### Project setup
@@ -37,10 +37,8 @@ to add a `conanfile.txt`
 [requires]
 irrlicht/1.8.4@mpusz/stable
 
-[options]
-
 [generators]
-cmake_paths
+cmake
 ```
 
 or if you are using `conanfile.py` file add:
@@ -49,19 +47,25 @@ or if you are using `conanfile.py` file add:
 requires = "irrlicht/1.8.4@mpusz/stable"
 ```
 
-Complete the installation of requirements for your project running:
+Complete the installation of dependencies for your project by running:
 
 ```
 mkdir build
 cd build
-conan install .. --build=outdated <your_profile_and_settings>
+conan install .. -b=outdated <your_profile_and_settings>
 <your typical build process>
 ```
 
 Project setup installs the library (and all its dependencies), and assuming you chose
-`cmake_paths` as a generator, it generates `conan_paths.cmake` file that defines variables
-to make CMake `find_package()` work and find all the dependencies in the Conan local cache.
+`cmake` as a generator, it generates `conanbuildinfo.cmake` file that defines variables
+to make CMake work and find all the dependencies in the Conan local cache.
 
+## Available Options
+
+| Option | Default | Values        | Description                         |
+|--------|---------|---------------|-------------------------------------|
+| shared | False   | [True, False] | Generates shared library            |
+| fPIC   | True    | [True, False] | Generates position-independent code |
 
 ## Build package
 
