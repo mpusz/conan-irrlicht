@@ -12,6 +12,7 @@ environment:
 
     matrix:
         - MINGW_CONFIGURATIONS: "4.9@x86_64@seh@posix, 5@x86_64@seh@posix, 6@x86_64@seh@posix, 7@x86_64@seh@posix, 8@x86_64@seh@posix"
+          CONAN_BUILD_REQUIRES: msys2_installer/latest@bincrafters/stable
         # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
         #   CONAN_VISUAL_VERSIONS: 12
         # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
