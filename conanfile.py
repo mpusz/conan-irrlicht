@@ -58,7 +58,8 @@ class IrrlichtConan(ConanFile):
         # patch OSX build
         shutil.move("Irrlicht.cpp", "Irrlicht.mm")
         shutil.move("COpenGLDriver.cpp", "COpenGLDriver.mm")
-        tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")        
+        tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")
+        tools.patch(patch_file="osx-window-creation.patch")
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
