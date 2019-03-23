@@ -1,7 +1,7 @@
-Index: CIrrDeviceOSX.mm
+Index: source/Irrlicht/CIrrDeviceOSX.mm
 ===================================================================
---- CIrrDeviceOSX.mm	(revision 5652)
-+++ CIrrDeviceOSX.mm	(working copy)
+--- source/Irrlicht/CIrrDeviceOSX.mm	(revision 5652)
++++ source/Irrlicht/CIrrDeviceOSX.mm	(working copy)
 @@ -577,8 +577,8 @@
  		if (!CreationParams.WindowId)
  		{

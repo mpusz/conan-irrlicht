@@ -9,6 +9,7 @@ class IrrlichtConan(ConanFile):
     url = "https://github.com/mpusz/conan-irrlicht"
     description = "An open source high performance realtime 3D engine written in C++"
     exports = "LICENSE.md"
+    exports_sources = ["*.patch"]
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
@@ -59,7 +60,7 @@ class IrrlichtConan(ConanFile):
         shutil.move("Irrlicht.cpp", "Irrlicht.mm")
         shutil.move("COpenGLDriver.cpp", "COpenGLDriver.mm")
         tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")
-        tools.patch(patch_file="osx-window-creation.patch")
+        tools.patch(patch_file=os.path.join(self.source_folder, "osx-window-creation.patch"), strip=2)
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
