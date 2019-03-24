@@ -8,8 +8,7 @@ environment:
     CONAN_CHANNEL: "testing"
     CONAN_UPLOAD: "https://api.bintray.com/conan/mpusz/conan-mpusz "
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
-    CONAN_UPLOAD_ONLY_WHEN_STABLE: 0 # Will only upload when the branch matches "release/*"
-    CONAN_TOTAL_PAGES: 1
+    CONAN_UPLOAD_ONLY_WHEN_STABLE: 0
 
     matrix:
         - MINGW_CONFIGURATIONS: "4.9@x86_64@seh@posix, 5@x86_64@seh@posix, 6@x86_64@seh@posix, 7@x86_64@seh@posix, 8@x86_64@seh@posix"
