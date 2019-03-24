@@ -1,15 +1,15 @@
-Index: source/Irrlicht/MacOSX/CIrrDeviceOSX.mm
+Index: source/Irrlicht/MacOSX/CIrrDeviceMacOSX.mm
 ===================================================================
---- source/Irrlicht/MacOSX/CIrrDeviceOSX.mm	(revision 5652)
-+++ source/Irrlicht/MacOSX/CIrrDeviceOSX.mm	(working copy)
+--- source/Irrlicht/MacOSX/CIrrDeviceMacOSX.mm	(revision 5652)
++++ source/Irrlicht/MacOSX/CIrrDeviceMacOSX.mm	(working copy)
 @@ -495,8 +495,8 @@
- 		if (!CreationParams.WindowId)
+ 		if(!CreationParams.WindowId) //load menus if standalone application
  		{
  			[[NSAutoreleasePool alloc] init];
 -			[NSApplication sharedApplication];
--			[NSApp setDelegate:(id<NSFileManagerDelegate>)[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
+-			[NSApp setDelegate:(id<NSFileManagerDelegate>)[[[AppDelegate alloc] initWithDevice:this] autorelease]];
 +			[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
-+			[NSApp setDelegate:(id<NSApplicationDelegate>)[[[CIrrDelegateOSX alloc] initWithDevice:this] autorelease]];
-             
-             // Create menu
-             
++			[NSApp setDelegate:(id<NSApplicationDelegate>)[[[AppDelegate alloc] initWithDevice:this] autorelease]];
+ 			[NSBundle loadNibNamed:@"MainMenu" owner:[NSApp delegate]];
+ 			[NSApp finishLaunching];
+ 		}
