@@ -51,16 +51,30 @@ class IrrlichtConan(ConanFile):
             for package in packages:
                 installer.install(package)
 
+    def _patch_add_shared_lib_links(self):
+        # Irrlicht does that only for install step and without the links create Conan does not link correctly
+        tools.replace_in_file("Makefile", "cp $(SHARED_FULLNAME) $(LIB_PATH)", """cp $(SHARED_FULLNAME) $(LIB_PATH)
+	cd $(LIB_PATH) && ln -s -f $(SHARED_FULLNAME) $(SONAME)
+	cd $(LIB_PATH) && ln -s -f $(SONAME) $(SHARED_LIB)""")
+
     def _patch_mingw(self):
         # patch library name
         tools.replace_in_file("Makefile", "-ld3dx9d", "-ld3dx9")
 
     def _patch_macos(self):
-        # patch OSX build
+        # fix compilation
         shutil.move("Irrlicht.cpp", "Irrlicht.mm")
         shutil.move("COpenGLDriver.cpp", "COpenGLDriver.mm")
+        # uncomment Macosx linker flags
         tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")
+        # fix window creation
         tools.patch(patch_file=os.path.join(self.source_folder, "osx-window-creation.patch"), strip=2)
+        # fix shared libraries
+        self._patch_add_shared_lib_links()
+
+    def _patch_linux(self):
+        # fix shared libraries
+        self._patch_add_shared_lib_links()
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
@@ -81,6 +95,7 @@ class IrrlichtConan(ConanFile):
                     autotools.include_paths.append(os.getcwd())
                     make_target = "sharedlib_osx" if self.options.shared else "staticlib_osx"
                 else:
+                    self._patch_linux()
                     make_target = "sharedlib" if self.options.shared else "staticlib"
 
                 autotools.make(target=make_target)
@@ -112,19 +127,19 @@ class IrrlichtConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
-        if self.settings.os == "Windows":
-            self.cpp_info.libs.append("opengl32")
-            self.cpp_info.libs.append("m")
-
-        if self.settings.os == "Macos":
-            self.cpp_info.exelinkflags.append("-framework OpenGL")
-        
-        if self.settings.os == "Linux":
+        if tools.os_info.is_windows:
             if not self.options.shared:
-                self.cpp_info.libs.append("GL")
-                self.cpp_info.libs.append("Xxf86vm")
-                self.cpp_info.libs.append("Xext")
-                self.cpp_info.libs.append("X11")
-                self.cpp_info.libs.append("Xcursor")
+                self.cpp_info.defines.extend(['_IRR_STATIC_LIB_'])
+                self.cpp_info.libs.extend(['opengl32', 'm', 'winmm'])
+        elif tools.os_info.is_macos:
+            if not self.options.shared:
+                self.cpp_info.libs.append('GL')
+            frameworks = ['Cocoa', 'Carbon', 'OpenGL', 'IOKit']
+            for framework in frameworks:
+                self.cpp_info.exelinkflags.append("-framework %s" % framework)
+            self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
+        else:
+            if not self.options.shared:
+                self.cpp_info.libs.extend(['GL', 'Xxf86vm', 'Xext', 'X11', 'Xcursor'])
 
         self.output.info(self.cpp_info.libs)
