@@ -127,7 +127,7 @@ class IrrlichtConan(ConanFile):
         self.copy(pattern="*.lib", src=lib_folder, dst="lib", keep_path=False)
         self.copy(pattern="*.a", src=lib_folder, dst="lib", keep_path=False)
         self.copy(pattern="*.so*", src=lib_folder, dst="lib", keep_path=False)
-        self.copy(pattern="*.dylib", src=lib_folder, dst="lib", keep_path=False)
+        self.copy(pattern="*.dylib*", src=lib_folder, dst="lib", keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
