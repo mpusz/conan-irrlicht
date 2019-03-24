@@ -19,12 +19,12 @@ To add [conan-mpusz](https://bintray.com/mpusz/conan-mpusz) remote to your
 local `conan` instance run:
 
 ```bash
-conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
+$ conan remote add conan-mpusz https://api.bintray.com/conan/mpusz/conan-mpusz
 ```
 
 ### Basic setup
 
-```
+```bash
 $ conan install irrlicht/1.8.4@mpusz/stable -pr <your_conan_profile> -b=outdated
 ```
 
@@ -49,11 +49,11 @@ requires = "irrlicht/1.8.4@mpusz/stable"
 
 Complete the installation of dependencies for your project by running:
 
-```
-mkdir build
-cd build
-conan install .. -b=outdated <your_profile_and_settings>
-<your typical build process>
+```bash
+$ mkdir build
+$ cd build
+$ conan install .. -b=outdated <your_profile_and_settings>
+< your typical build process>
 ```
 
 Project setup installs the library (and all its dependencies), and assuming you chose
@@ -69,12 +69,12 @@ to make CMake work and find all the dependencies in the Conan local cache.
 
 ## Build package
 
-```
+```bash
 $ conan create . <user>/<channel> <your_profile_and_settings>
 ```
 
 ## Upload package to server
 
-```
+```bash
 $ conan upload -r <remote-name> --all irrlicht/1.8.4@<user>/<channel>
 ```
