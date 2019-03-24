@@ -65,6 +65,8 @@ class IrrlichtConan(ConanFile):
         # fix compilation
         shutil.move("Irrlicht.cpp", "Irrlicht.mm")
         shutil.move("COpenGLDriver.cpp", "COpenGLDriver.mm")
+        # comment unsupported options
+        tools.replace_in_file("Makefile", "staticlib_osx sharedlib_osx: LDFLAGS += --no-export-all-symbols --add-stdcall-alias", "#staticlib_osx sharedlib_osx: LDFLAGS += --no-export-all-symbols --add-stdcall-alias")
         # uncomment Macosx linker flags
         tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")
         # fix window creation
