@@ -136,8 +136,6 @@ class IrrlichtConan(ConanFile):
                 self.cpp_info.defines.extend(['_IRR_STATIC_LIB_'])
                 self.cpp_info.libs.extend(['opengl32', 'm', 'winmm'])
         elif tools.os_info.is_macos:
-            if not self.options.shared:
-                self.cpp_info.libs.append('GL')
             frameworks = ['Cocoa', 'Carbon', 'OpenGL', 'IOKit']
             for framework in frameworks:
                 self.cpp_info.exelinkflags.append("-framework %s" % framework)
