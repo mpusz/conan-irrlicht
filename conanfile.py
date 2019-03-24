@@ -69,6 +69,8 @@ class IrrlichtConan(ConanFile):
         tools.replace_in_file("Makefile", "staticlib_osx sharedlib_osx: LDFLAGS += --no-export-all-symbols --add-stdcall-alias", "#staticlib_osx sharedlib_osx: LDFLAGS += --no-export-all-symbols --add-stdcall-alias")
         # uncomment Macosx linker flags
         tools.replace_in_file("Makefile", "#sharedlib_osx: LDFLAGS", "sharedlib_osx: LDFLAGS")
+        # add Macosx specific sources
+        tools.replace_in_file("Makefile", "Irrlicht.o os.o", "Irrlicht.o os.o MacOSX/CIrrDeviceMacOSX.o MacOSX/OSXClipboard.o MacOSX/AppDelegate.o")
         # fix window creation
         tools.patch(patch_file=os.path.join(self.source_folder, "osx-window-creation.patch"), strip=2)
         # fix shared libraries
