@@ -2,16 +2,13 @@ build: false
 
 environment:
     PYTHON: "C:\\Python37"
-
-    CONAN_USERNAME: "mpusz"
-    CONAN_LOGIN_USERNAME: "mpusz"
-    CONAN_CHANNEL: "testing"
-    CONAN_UPLOAD: "https://api.bintray.com/conan/mpusz/conan-mpusz "
-    CONAN_STABLE_BRANCH_PATTERN: "release/*"
-    CONAN_UPLOAD_ONLY_WHEN_STABLE: 0
-
+  
     matrix:
-        - MINGW_CONFIGURATIONS: "4.9@x86_64@seh@posix, 5@x86_64@seh@posix, 6@x86_64@seh@posix, 7@x86_64@seh@posix, 8@x86_64@seh@posix"
+        - MINGW_CONFIGURATIONS: "4.9@x86_64@seh@posix, 5@x86_64@seh@posix"
+          CONAN_BUILD_REQUIRES: msys2_installer/latest@bincrafters/stable
+        - MINGW_CONFIGURATIONS: "6@x86_64@seh@posix, 7@x86_64@seh@posix"
+          CONAN_BUILD_REQUIRES: msys2_installer/latest@bincrafters/stable
+        - MINGW_CONFIGURATIONS: "8@x86_64@seh@posix"
           CONAN_BUILD_REQUIRES: msys2_installer/latest@bincrafters/stable
         # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
         #   CONAN_VISUAL_VERSIONS: 12
