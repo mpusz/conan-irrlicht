@@ -1,5 +1,5 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?maxAge=3600)](https://raw.githubusercontent.com/mpusz/conan-irrlicht/master/LICENSE)
-[![Travis CI](https://img.shields.io/travis/mpusz/conan-irrlicht/master.svg?label=Travis%20CI)](https://travis-ci.org/mpusz/conan-irrlicht)
+[![Travis CI](https://img.shields.io/travis/com/mpusz/conan-irrlicht/master.svg?label=Travis%20CI)](https://travis-ci.org/mpusz/conan-irrlicht)
 [![AppVeyor](https://img.shields.io/appveyor/ci/mpusz/conan-irrlicht/master.svg?label=AppVeyor)](https://ci.appveyor.com/project/mpusz/conan-irrlicht)
 [![Download](https://api.bintray.com/packages/mpusz/conan-mpusz/irrlicht%3Ampusz/images/download.svg)](https://bintray.com/mpusz/conan-mpusz/irrlicht%3Ampusz/_latestVersion)
 
