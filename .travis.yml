@@ -39,17 +39,17 @@ matrix:
       - <<: *linux
         env: CONAN_CLANG_VERSIONS=9 CONAN_DOCKER_IMAGE=conanio/clang9
       - <<: *osx
-        osx_image: xcode8.3
-        env: CONAN_APPLE_CLANG_VERSIONS=8.1
-      - <<: *osx
-        osx_image: xcode9
-        env: CONAN_APPLE_CLANG_VERSIONS=9.0
-      - <<: *osx
         osx_image: xcode9.4
         env: CONAN_APPLE_CLANG_VERSIONS=9.1
       - <<: *osx
         osx_image: xcode10
         env: CONAN_APPLE_CLANG_VERSIONS=10.0
+      - <<: *osx
+        osx_image: xcode11
+        env: CONAN_APPLE_CLANG_VERSIONS=11.0
+      - <<: *osx
+        osx_image: xcode12
+        env: CONAN_APPLE_CLANG_VERSIONS=12.0
 
 install:
   - .travis/install.sh
