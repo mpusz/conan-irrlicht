@@ -3,8 +3,13 @@ import os
 
 class TestPackageConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
+    options = {"shared": [True, False], "fPIC": [True, False]}
     generators = "cmake"
     
+    def config_options(self):
+        if self.settings.os == 'Windows':
+            del self.options.fPIC
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()

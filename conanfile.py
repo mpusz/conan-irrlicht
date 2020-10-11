@@ -81,12 +81,15 @@ class IrrlichtConan(ConanFile):
         self._patch_add_shared_lib_links()
 
     def build(self):
-        if self.settings.compiler == "Visual Studio":
-            msbuild = MSBuild(self)
-            msbuild.build("../source/%s/source/Irrlicht/Irrlicht11.0.sln" % self._subfolder)
-            # TBD....
-        else:
-            with tools.chdir(os.path.join(self._subfolder, "source", "Irrlicht")):
+        with tools.chdir(os.path.join(self._subfolder, "source", "Irrlicht")):
+            if self.settings.compiler == "Visual Studio":
+                msbuild = MSBuild(self)
+                if self.options.shared:
+                    build_type = self.settings.build_type
+                else:
+                    build_type = "Static lib - %s" % self.settings.build_type
+                msbuild.build("Irrlicht11.0.sln", build_type=build_type, use_env=False)
+            else:
                 autotools = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
                 if self.settings.os != 'Windows':
                     autotools.fpic = self.options.fPIC
@@ -114,7 +117,13 @@ class IrrlichtConan(ConanFile):
         self.copy(pattern="*", dst="media", src=media_folder)
 
         if tools.os_info.is_windows:
-            folder = "Win32-gcc"
+            if self.settings.compiler == "Visual Studio":
+                if self.settings.arch == 'x86_64':
+                    folder = "Win64-visualStudio"
+                else:
+                    folder = "Win32-visualStudio"
+            else:
+                folder = "Win32-gcc"
         elif tools.os_info.is_macos:
             folder = "MacOSX"
         else:
@@ -134,7 +143,9 @@ class IrrlichtConan(ConanFile):
         if tools.os_info.is_windows:
             if not self.options.shared:
                 self.cpp_info.defines.extend(['_IRR_STATIC_LIB_'])
-                self.cpp_info.libs.extend(['opengl32', 'm', 'winmm'])
+                self.cpp_info.libs.extend(['opengl32', 'winmm'])
+                if self.settings.compiler != "Visual Studio":
+                    self.cpp_info.libs.extend(['m'])
         elif tools.os_info.is_macos:
             frameworks = ['Cocoa', 'Carbon', 'OpenGL', 'IOKit']
             for framework in frameworks:
