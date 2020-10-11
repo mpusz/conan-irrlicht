@@ -33,7 +33,7 @@ class IrrlichtConan(ConanFile):
         if self.settings.os == "Linux" and tools.os_info.is_linux:
             installer = tools.SystemPackageTool()
             if tools.os_info.with_apt:
-                packages = ['libgl1-mesa-dev', 'libxcursor-dev', 'libxxf86vm-dev']
+                packages = ['libgl1-mesa-dev', 'libxcursor-dev', 'libxxf86vm-dev', 'libxext-dev']
 
             if tools.os_info.with_yum:
                 if self.settings.arch == "x86":
