@@ -100,6 +100,10 @@ class IrrlichtConan(ConanFile):
                     self._patch_linux()
                     make_target = "sharedlib" if self.options.shared else "staticlib"
 
+                compiler = self.settings.compiler
+                if compiler == "clang":
+                    autotools.flags.append("-Wno-register")
+
                 autotools.make(target=make_target)
 
     def package(self):
@@ -149,5 +153,10 @@ class IrrlichtConan(ConanFile):
         else:
             if not self.options.shared:
                 self.cpp_info.libs.extend(['GL', 'Xxf86vm', 'Xext', 'X11', 'Xcursor'])
-
         self.output.info(self.cpp_info.libs)
+
+        compiler = self.settings.compiler
+        if compiler == "clang":
+            self.cpp_info.cxxflags = [
+                "-Wno-register"
+            ]
