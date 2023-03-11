@@ -1,10 +1,7 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(test_package)
+cmake_minimum_required(VERSION 3.15)
+project(test_package LANGUAGES CXX)
 
-set(CMAKE_VERBOSE_MAKEFILE TRUE)
+find_package(irrlicht CONFIG REQUIRED)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-
-add_executable(${PROJECT_NAME} test_package.cpp)
-target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
+add_executable(test_package test_package.cpp)
+target_link_libraries(test_package PRIVATE irrlicht::irrlicht)
