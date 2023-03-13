@@ -163,6 +163,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [ $RUNNER_OS == 'Linux' ]; then
+            sudo apt install -y libgl1-mesa-dev libxcursor-dev libxxf86vm-dev libxext-dev
+          fi
       - name: Install gcc-12
         if: matrix.config.compiler.type == 'GCC' && matrix.config.compiler.version == '12'
         shell: bash
