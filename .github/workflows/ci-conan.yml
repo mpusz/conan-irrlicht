@@ -1,0 +1,237 @@
+# The MIT License (MIT)
+#
+# Copyright (c) 2018 Mateusz Pusz
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+name: Conan CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }} ${{ matrix.build_type }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows MSVC 14.2",
+              os: windows-2019,
+              compiler: { type: VISUAL, version: 16, cc: "", cxx: "", std: 20 },
+            }
+          - {
+              name: "Windows MSVC 14.3",
+              os: windows-2022,
+              compiler: { type: MSVC, version: 193, cc: "", cxx: "", std: 23 },
+            }
+          - {
+              name: "Ubuntu GCC-10",
+              os: ubuntu-22.04,
+              compiler:
+                {
+                  type: GCC,
+                  version: 10,
+                  cc: "gcc-10",
+                  cxx: "g++-10",
+                  std: 20,
+                },
+            }
+          - {
+              name: "Ubuntu GCC-11",
+              os: ubuntu-22.04,
+              compiler:
+                {
+                  type: GCC,
+                  version: 11,
+                  cc: "gcc-11",
+                  cxx: "g++-11",
+                  std: 20,
+                },
+            }
+          - {
+              name: "Ubuntu GCC-12",
+              os: ubuntu-22.04,
+              compiler:
+                {
+                  type: GCC,
+                  version: 12,
+                  cc: "gcc-12",
+                  cxx: "g++-12",
+                  std: 20,
+                },
+            }
+          - {
+              name: "Ubuntu Clang-12 + libstdc++11",
+              os: ubuntu-20.04,
+              compiler:
+                {
+                  type: CLANG,
+                  version: 12,
+                  cc: "clang-12",
+                  cxx: "clang++-12",
+                  std: 20,
+                },
+              lib: "libstdc++11",
+            }
+          - {
+              name: "Ubuntu Clang-12 + libc++",
+              os: ubuntu-20.04,
+              compiler:
+                {
+                  type: CLANG,
+                  version: 12,
+                  cc: "clang-12",
+                  cxx: "clang++-12",
+                  std: 20,
+                },
+              lib: "libc++",
+            }
+          - {
+              name: "Ubuntu Clang-13 + libc++",
+              os: ubuntu-22.04,
+              compiler:
+                {
+                  type: CLANG,
+                  version: 13,
+                  cc: "clang-13",
+                  cxx: "clang++-13",
+                  std: 20,
+                },
+              lib: "libc++",
+            }
+          - {
+              name: "Ubuntu Clang-14 + libc++",
+              os: ubuntu-22.04,
+              compiler:
+                {
+                  type: CLANG,
+                  version: 14,
+                  cc: "clang-14",
+                  cxx: "clang++-14",
+                  std: 20,
+                },
+              lib: "libc++",
+            }
+          - {
+              name: "Ubuntu Clang-15 + libc++",
+              os: ubuntu-22.04,
+              compiler:
+                {
+                  type: CLANG,
+                  version: 15,
+                  cc: "clang-15",
+                  cxx: "clang++-15",
+                  std: 20,
+                },
+              lib: "libc++",
+            }
+          - {
+              name: "MacOS Apple Clang 13",
+              os: macos-11,
+              compiler:
+                {
+                  type: APPLE_CLANG,
+                  version: "13.0",
+                  cc: "clang",
+                  cxx: "clang++",
+                  std: 20,
+                },
+            }
+        build_type: ["Release", "Debug"]
+
+    env:
+      CC: ${{ matrix.config.compiler.cc }}
+      CXX: ${{ matrix.config.compiler.cxx }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install gcc-12
+        if: matrix.config.compiler.type == 'GCC' && matrix.config.compiler.version == '12'
+        shell: bash
+        run: |
+          sudo apt install -y g++-${{ matrix.config.compiler.version }}
+      - name: Install Clang
+        if: matrix.config.compiler.type == 'CLANG'
+        shell: bash
+        working-directory: ${{ env.HOME }}
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh ${{ matrix.config.compiler.version }}
+      - name: Install Libc++
+        if: matrix.config.compiler.type == 'CLANG' && matrix.config.lib == 'libc++'
+        shell: bash
+        run: |
+          sudo apt install -y libc++-${{ matrix.config.compiler.version }}-dev libc++abi-${{ matrix.config.compiler.version }}-dev libunwind-${{ matrix.config.compiler.version }}-dev
+      - name: Select Xcode 13.0
+        if: matrix.config.compiler.type == 'APPLE_CLANG' && matrix.config.compiler.version == '13.0'
+        shell: bash
+        run: |
+          sudo xcode-select -s "/Applications/Xcode_13.0.app"
+      - name: Install Ninja
+        shell: bash
+        run: |
+          if [ $RUNNER_OS == 'Linux' ]; then
+            sudo apt install -y ninja-build
+          elif [ $RUNNER_OS == 'Windows' ]; then
+            choco install ninja
+          elif [ $RUNNER_OS == 'macOS' ]; then
+            brew update
+            brew install ninja
+          else
+            echo "'$RUNNER_OS' not supported"
+            exit 1
+          fi
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - name: Install Conan
+        shell: bash
+        run: |
+          pip install -U conan
+      - name: Configure Conan
+        shell: bash
+        run: |
+          conan profile detect --force
+          conan remote add artifactory https://mpusz.jfrog.io/artifactory/api/conan/conan-oss
+          if [[ "${{ matrix.config.compiler.type }}" == "CLANG" ]]; then
+            sed -i.backup '/^\[settings\]$/,/^\[/ s/^compiler.libcxx=.*/compiler.libcxx=${{ matrix.config.lib }}/' ~/.conan2/profiles/default
+          fi
+          sed -i.backup '/^\[settings\]$/,/^\[/ s/^compiler.cppstd=.*/compiler.cppstd=${{ matrix.config.compiler.std }}/' ~/.conan2/profiles/default
+          sed -i.backup '/^\[settings\]$/,/^\[/ s/^build_type=.*/build_type=${{ matrix.build_type }}/' ~/.conan2/profiles/default
+          conan profile show -pr default
+      # - name: Add support for clang-13 to Conan's settings.yml
+      #   # TODO Remove when Conan will support clang-13
+      #   if: matrix.config.compiler.type == 'CLANG'
+      #   shell: bash
+      #   run: |
+      #     sed -i -e 's/"8", "9", "10", "11", "12"]/"8", "9", "10", "11", "12", "13"]/' ~/.conan/settings.yml
+      - name: Create Conan package
+        shell: bash
+        run: |
+          conan create . --user mpusz --channel testing -b irrlicht -b missing -c tools.cmake.cmaketoolchain:generator="Ninja Multi-Config"
+      - name: Upload irrlicht Conan package
+        if: github.ref == 'refs/heads/master' || env.CHANNEL == 'stable'
+        shell: bash
+        run: |
+          conan remote login artifactory ${{ secrets.CONAN_LOGIN_USERNAME }} -p ${{ secrets.CONAN_PASSWORD }}
+          conan upload "irrlicht*" -r artifactory --confirm
