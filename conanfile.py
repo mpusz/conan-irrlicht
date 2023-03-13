@@ -45,6 +45,14 @@ class IrrlichtConan(ConanFile):
             "<linux/sysctl.h>",
         )
 
+    def _patch_incorrect_template(self):
+        replace_in_file(
+            self,
+            os.path.join(self.source_folder, "include", "irrXML.h"),
+            "xmlChar<T>",
+            "xmlChar",
+        )
+
     def _patch_mingw(self):
         # patch library name
         replace_in_file(self, "Makefile", "-ld3dx9d", "-ld3dx9")
@@ -123,6 +131,7 @@ class IrrlichtConan(ConanFile):
             tc.generate()
 
     def build(self):
+        self._patch_incorrect_template()
         with chdir(self, os.path.join(self.source_folder, "source", "Irrlicht")):
             if self.settings.compiler == "msvc":
                 msbuild = MSBuild(self)
@@ -193,6 +202,7 @@ class IrrlichtConan(ConanFile):
     def package_info(self):
         self.cpp_info.libs = collect_libs(self)
         self.output.info(self.cpp_info.libs)
+        self.cpp_info.resdirs = ["media"]
         if self.settings.os == "Windows":
             if not self.options.shared:
                 self.cpp_info.defines.extend(["_IRR_STATIC_LIB_"])

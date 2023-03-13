@@ -37,7 +37,11 @@
 # build artifacts
 /cmake-build-*/
 /build/
+/src/
 /out/
+
+# CMake
+CMakeUserPresets.json
 
 # Conan
 *.pyc
