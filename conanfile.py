@@ -5,7 +5,7 @@ from conan import ConanFile
 from conan.tools.cmake import cmake_layout
 from conan.tools.gnu import AutotoolsToolchain, Autotools
 from conan.tools.files import chdir, collect_libs, copy, get, replace_in_file, patch
-from conan.tools.microsoft import MSBuild
+from conan.tools.microsoft import MSBuildToolchain, MSBuild
 from conan.tools.system.package_manager import Apt, Yum
 
 
@@ -80,11 +80,7 @@ class IrrlichtConan(ConanFile):
             "Irrlicht.o os.o MacOSX/CIrrDeviceMacOSX.o MacOSX/OSXClipboard.o MacOSX/AppDelegate.o",
         )
         # fix window creation
-        patch(
-            self,
-            patch_file=os.path.join(self.recipe_folder, "osx-window-creation.patch"),
-            strip=2,
-        )
+        patch(self, patch_file="osx-window-creation.patch", strip=2)
         # fix shared libraries
         self._patch_add_shared_lib_links()
 
@@ -93,9 +89,24 @@ class IrrlichtConan(ConanFile):
         self._patch_add_shared_lib_links()
         self._patch_change_sysctl()
 
+    @property
+    def _msbuild_configuration(self):
+        build_type = "Debug" if self.settings.build_type == "Debug" else "Release"
+        if self.options.shared:
+            return build_type
+        else:
+            return "Static lib - %s" % build_type
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+
+    def configure(self):
+        if self.options.shared:
+            self.options.rm_safe("fPIC")
+
+    def layout(self):
+        cmake_layout(self, src_folder="src")
 
     def source(self):
         zip_name = "irrlicht-%s.zip" % self.version
@@ -118,11 +129,12 @@ class IrrlichtConan(ConanFile):
             ["mesa-libGL-devel%s" % arch_suffix, "libXcursor-devel%s" % arch_suffix]
         )
 
-    def layout(self):
-        cmake_layout(self, src_folder="src")
-
     def generate(self):
-        if self.settings.compiler != "msvc":
+        if self.settings.compiler == "msvc":
+            tc = MSBuildToolchain(self)
+            tc.configuration = self._msbuild_configuration
+            tc.generate()
+        else:
             tc = AutotoolsToolchain(self)
             compiler = self.settings.compiler
             if compiler == "clang":
@@ -135,11 +147,8 @@ class IrrlichtConan(ConanFile):
         with chdir(self, os.path.join(self.source_folder, "source", "Irrlicht")):
             if self.settings.compiler == "msvc":
                 msbuild = MSBuild(self)
-                if self.options.shared:
-                    targets = [self.settings.build_type]
-                else:
-                    targets = ["Static lib - %s" % self.settings.build_type]
-                msbuild.build("Irrlicht11.0.sln", targets=targets)
+                msbuild.build_type = self._msbuild_configuration
+                msbuild.build("Irrlicht11.0.sln")
             else:
                 autotools = Autotools(self)
                 if self.settings.os == "Windows":
@@ -189,8 +198,8 @@ class IrrlichtConan(ConanFile):
             folder = "Linux"
 
         bin_src = os.path.join(self.source_folder, "bin", folder)
-        bin_dst = os.path.join(self.package_folder, "bin")
         lib_src = os.path.join(self.source_folder, "lib", folder)
+        bin_dst = os.path.join(self.package_folder, "bin")
         lib_dst = os.path.join(self.package_folder, "lib")
 
         copy(self, "*.dll", bin_src, bin_dst, keep_path=False)
