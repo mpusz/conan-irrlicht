@@ -82,7 +82,7 @@ class IrrlichtConan(ConanFile):
         # fix window creation
         patch(
             self,
-            patch_file=os.path.join(self.source_folder, "osx-window-creation.patch"),
+            patch_file=os.path.join(self.recipe_folder, "osx-window-creation.patch"),
             strip=2,
         )
         # fix shared libraries
