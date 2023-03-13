@@ -136,10 +136,10 @@ class IrrlichtConan(ConanFile):
             if self.settings.compiler == "msvc":
                 msbuild = MSBuild(self)
                 if self.options.shared:
-                    build_type = self.settings.build_type
+                    target = self.settings.build_type
                 else:
-                    build_type = "Static lib - %s" % self.settings.build_type
-                msbuild.build("Irrlicht11.0.sln", build_type=build_type, use_env=False)
+                    target = "Static lib - %s" % self.settings.build_type
+                msbuild.build("Irrlicht11.0.sln", targets=[target])
             else:
                 autotools = Autotools(self)
                 if self.settings.os == "Windows":
