@@ -216,7 +216,7 @@ class IrrlichtConan(ConanFile):
             if not self.options.shared:
                 self.cpp_info.defines.extend(["_IRR_STATIC_LIB_"])
                 self.cpp_info.system_libs.extend(["opengl32", "winmm"])
-                if self.settings.compiler != "Visual Studio":
+                if self.settings.compiler != "msvc":
                     self.cpp_info.system_libs.extend(["m"])
         elif self.settings.os == "Macos":
             frameworks = ["Cocoa", "Carbon", "OpenGL", "IOKit"]
