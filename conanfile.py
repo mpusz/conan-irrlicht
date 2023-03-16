@@ -116,6 +116,7 @@ class IrrlichtConan(ConanFile):
             sha1="38bf0223fe868d243d6a39d0dc191c8df6e03b3b",
             strip_root=True,
         )
+        self._patch_incorrect_template()
 
     def system_requirements(self):
         Apt(self).install(
@@ -143,7 +144,6 @@ class IrrlichtConan(ConanFile):
             tc.generate()
 
     def build(self):
-        self._patch_incorrect_template()
         with chdir(self, os.path.join(self.source_folder, "source", "Irrlicht")):
             if self.settings.compiler == "msvc":
                 msbuild = MSBuild(self)
