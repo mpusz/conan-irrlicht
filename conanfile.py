@@ -195,7 +195,7 @@ class IrrlichtConan(ConanFile):
                 tc.extra_cflags.append("-Wno-register")
                 tc.extra_cxxflags.append("-Wno-register")
             if self.settings.os == "Macos":
-                tc.configure_args.append("--includedir=source/Irrlicht")
+                tc.configure_args.append("--includedir=${prefix}")
             tc.generate()
 
     def build(self):
