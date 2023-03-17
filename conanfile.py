@@ -18,8 +18,12 @@ class IrrlichtConan(ConanFile):
     exports = "LICENSE.md"
     exports_sources = ["*.patch"]
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": False, "fPIC": True}
+    options = {
+        "shared": [True, False],
+        "fPIC": [True, False],
+        "directx9": [True, False],
+    }
+    default_options = {"shared": False, "fPIC": True, "directx9": False}
     package_type = "library"
 
     @property
@@ -145,6 +149,8 @@ class IrrlichtConan(ConanFile):
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
+        else:
+            del self.options.directx9
 
     def configure(self):
         if self.options.shared:
@@ -179,6 +185,8 @@ class IrrlichtConan(ConanFile):
         if self.settings.compiler == "msvc":
             tc = MSBuildToolchain(self)
             tc.configuration = self._msbuild_configuration
+            if self.options.directx9 == False:
+                tc.preprocessor_definitions["NO_IRR_COMPILE_WITH_DIRECT3D_9_"] = "1"
             tc.generate()
         else:
             tc = AutotoolsToolchain(self)
