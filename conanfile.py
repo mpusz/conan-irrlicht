@@ -47,7 +47,9 @@ class IrrlichtConan(ConanFile):
         )
         replace_in_file(
             self,
-            os.path.join(self.source_folder, "source", "Irrlicht", "CColorConverter.h"),
+            os.path.join(
+                self.source_folder, "source", "Irrlicht", "CColorConverter.cpp"
+            ),
             "register u32",
             "u32",
         )
