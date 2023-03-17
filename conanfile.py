@@ -8,6 +8,8 @@ from conan.tools.files import chdir, collect_libs, copy, get, replace_in_file, p
 from conan.tools.microsoft import MSBuildToolchain, MSBuild
 from conan.tools.system.package_manager import Apt, Yum
 
+required_conan_version = ">=2.0.2"
+
 
 class IrrlichtConan(ConanFile):
     name = "irrlicht"
