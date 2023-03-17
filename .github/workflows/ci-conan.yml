@@ -40,7 +40,7 @@ jobs:
           - {
               name: "Windows MSVC 14.3",
               os: windows-2022,
-              compiler: { type: MSVC, version: 193, cc: "", cxx: "", std: 23 },
+              compiler: { type: MSVC, version: 193, cc: "", cxx: "", std: 20 },
             }
           - {
               name: "Ubuntu GCC-10",
