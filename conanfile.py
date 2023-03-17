@@ -34,6 +34,14 @@ class IrrlichtConan(ConanFile):
             "xmlChar",
         )
 
+    def _patch_register(self):
+        replace_in_file(
+            self,
+            os.path.join(self.source_folder, "source", "Irrlicht", "CMY3DHelper.h"),
+            "register int",
+            "int",
+        )
+
     def _patch_add_shared_lib_links(self):
         # Irrlicht does that only for install step and without the links create Conan does not link correctly
         replace_in_file(
@@ -147,6 +155,7 @@ class IrrlichtConan(ConanFile):
             strip_root=True,
         )
         self._patch_incorrect_template()
+        self._patch_register()
 
     def system_requirements(self):
         Apt(self).install(
