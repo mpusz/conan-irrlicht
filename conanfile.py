@@ -189,7 +189,6 @@ class IrrlichtConan(ConanFile):
                     )
                 elif self.settings.os == "Macos":
                     self._patch_macos()
-                    autotools.include_paths.append(os.getcwd())
                     make_target = (
                         "sharedlib_osx" if self.options.shared else "staticlib_osx"
                     )
