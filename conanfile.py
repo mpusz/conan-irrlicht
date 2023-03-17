@@ -26,6 +26,14 @@ class IrrlichtConan(ConanFile):
     def _subfolder(self):
         return "irrlicht-%s" % self.version
 
+    def _patch_incorrect_template(self):
+        replace_in_file(
+            self,
+            os.path.join(self.source_folder, "include", "irrXML.h"),
+            "xmlChar<T>",
+            "xmlChar",
+        )
+
     def _patch_add_shared_lib_links(self):
         # Irrlicht does that only for install step and without the links create Conan does not link correctly
         replace_in_file(
@@ -43,14 +51,6 @@ class IrrlichtConan(ConanFile):
             "COSOperator.cpp",
             "<sys/sysctl.h>",
             "<linux/sysctl.h>",
-        )
-
-    def _patch_incorrect_template(self):
-        replace_in_file(
-            self,
-            os.path.join(self.source_folder, "include", "irrXML.h"),
-            "xmlChar<T>",
-            "xmlChar",
         )
 
     def _patch_msvc(self):
@@ -105,7 +105,13 @@ class IrrlichtConan(ConanFile):
             "Irrlicht.o os.o MacOSX/CIrrDeviceMacOSX.o MacOSX/OSXClipboard.o MacOSX/AppDelegate.o",
         )
         # fix window creation
-        patch(self, patch_file="osx-window-creation.patch", strip=2)
+        patch(
+            self,
+            base_path=self.source_folder,
+            patch_file=os.path.join(
+                self.export_sources_folder, "patches", "osx-window-creation.patch"
+            ),
+        )
         # fix shared libraries
         self._patch_add_shared_lib_links()
 
@@ -134,10 +140,9 @@ class IrrlichtConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def source(self):
-        zip_name = "irrlicht-%s.zip" % self.version
         get(
             self,
-            "http://downloads.sourceforge.net/irrlicht/%s" % zip_name,
+            "http://downloads.sourceforge.net/irrlicht/irrlicht-%s.zip" % self.version,
             sha1="38bf0223fe868d243d6a39d0dc191c8df6e03b3b",
             strip_root=True,
         )
