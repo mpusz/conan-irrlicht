@@ -180,6 +180,8 @@ class IrrlichtConan(ConanFile):
             if compiler == "clang":
                 tc.extra_cflags.append("-Wno-register")
                 tc.extra_cxxflags.append("-Wno-register")
+            if self.settings.os == "Macos":
+                tc.configure_args.append("--includedir=source/Irrlicht")
             tc.generate()
 
     def build(self):
