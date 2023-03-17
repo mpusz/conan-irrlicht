@@ -41,6 +41,12 @@ class IrrlichtConan(ConanFile):
             "register int",
             "int",
         )
+        replace_in_file(
+            self,
+            os.path.join(self.source_folder, "source", "Irrlicht", "CColorConverter.h"),
+            "register u32",
+            "u32",
+        )
 
     def _patch_add_shared_lib_links(self):
         # Irrlicht does that only for install step and without the links create Conan does not link correctly
